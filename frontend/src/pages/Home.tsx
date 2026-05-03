@@ -13,8 +13,8 @@ export default function Home() {
     <div className="min-h-screen bg-bg-canvas flex items-center justify-center">
       <div className="bg-bg-surface border border-border-default rounded-lg p-6 w-80 shadow-md">
         <div className="flex items-center gap-2 mb-6">
-          <div className="w-8 h-8 bg-accent rounded-md flex items-center justify-center">
-            <span className="text-xs font-bold text-white">SD</span>
+          <div className="w-8 h-8 bg-bg-surface border border-border-default rounded-md flex items-center justify-center">
+            <span className="text-xs font-bold text-fg-default font-mono">SD</span>
           </div>
           <div>
             <h1 className="text-md font-semibold text-fg-default">SIEM Dashboard</h1>
