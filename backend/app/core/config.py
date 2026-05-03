@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     wazuh_user: str = "wazuh"
     wazuh_pass: str = ""
 
-    secret_key: str = "change-me-in-production"
+    secret_key: str = "change-me-in-production"  # noqa: S105
     access_token_expire_minutes: int = 30
     refresh_token_expire_days: int = 7
 
