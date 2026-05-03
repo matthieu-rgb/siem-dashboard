@@ -1,6 +1,6 @@
 # STATUS - SIEM Dashboard
 
-Derniere mise a jour : 2026-05-03 (session 3)
+Derniere mise a jour : 2026-05-03 (session 4 - ops)
 
 ## Phase courante
 Phase 3 : Wazuh API + Alertes en temps reel
@@ -35,6 +35,10 @@ Phase 3 : Wazuh API + Alertes en temps reel
 - [x] Frontend : Topbar breadcrumb + Cmd+K hint (session 3)
 - [x] Frontend : /agents stub (session 3)
 - [x] Frontend : 8 tests, 100% couverture statements pages (session 3)
+- [x] Backend entrypoint.sh : alembic upgrade head avant uvicorn (session 4)
+- [x] Healthcheck start_period passe a 60s (session 4)
+- [x] scripts/check_health.sh : bootstrap helper local dev (session 4)
+- [x] README : section Local development + troubleshooting (session 4)
 
 ## In progress
 (rien)
