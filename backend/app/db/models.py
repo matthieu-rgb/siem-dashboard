@@ -34,6 +34,15 @@ class User(Base):
     last_login: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
+class RefreshToken(Base):
+    __tablename__ = "refresh_tokens"
+
+    jti: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
 class Invite(Base):
     __tablename__ = "invites"
 

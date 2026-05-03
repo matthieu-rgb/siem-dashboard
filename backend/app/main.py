@@ -25,9 +25,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 app = FastAPI(
     title="SIEM Dashboard",
     version=settings.app_version,
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json",
+    docs_url="/api/docs" if settings.debug else None,
+    redoc_url="/api/redoc" if settings.debug else None,
+    openapi_url="/api/openapi.json" if settings.debug else None,
     lifespan=lifespan,
 )
 

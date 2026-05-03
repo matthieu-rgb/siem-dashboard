@@ -125,12 +125,37 @@ async def test_me_invalid_token(client: AsyncClient) -> None:
 
 @pytest.mark.asyncio
 async def test_me_refresh_token_rejected(client: AsyncClient, test_user: User) -> None:
-    refresh_token = create_refresh_token(str(test_user.id))
+    refresh_token, _ = create_refresh_token(str(test_user.id))
     response = await client.get(
         "/api/auth/me",
         headers={"Authorization": f"Bearer {refresh_token}"},
     )
     assert response.status_code == HTTP_UNAUTHORIZED
+
+
+@pytest.mark.asyncio
+async def test_refresh_rotates_jti(client: AsyncClient, test_user: User) -> None:
+    await client.post(
+        "/api/auth/login",
+        json={"email": TEST_EMAIL, "password": TEST_PASSWORD},
+    )
+    old_cookie = client.cookies.get("refresh_token")
+
+    first = await client.post("/api/auth/refresh")
+    assert first.status_code == HTTP_OK
+    first_cookie = client.cookies.get("refresh_token")
+
+    # Consecutive rotation must succeed (new jti was issued)
+    second = await client.post("/api/auth/refresh")
+    assert second.status_code == HTTP_OK
+    assert client.cookies.get("refresh_token") != first_cookie
+
+    # Replaying the old jti must be rejected
+    replay = await client.post(
+        "/api/auth/refresh",
+        cookies={"refresh_token": old_cookie},
+    )
+    assert replay.status_code == HTTP_UNAUTHORIZED
 
 
 @pytest.mark.asyncio
