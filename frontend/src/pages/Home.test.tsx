@@ -24,7 +24,7 @@ describe('Home', () => {
   })
 
   it('shows loading state initially', () => {
-    vi.mocked(api.health.get).mockReturnValue(new Promise(() => {}))
+    vi.mocked(api.health.get).mockImplementation(() => new Promise<never>(() => {}))
     render(<Home />, { wrapper })
     expect(screen.getByText(/connecting to backend/i)).toBeInTheDocument()
   })

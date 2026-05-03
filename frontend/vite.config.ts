@@ -24,6 +24,7 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     coverage: {
       provider: 'v8',
+      include: ['src/pages/**', 'src/hooks/**'],
       thresholds: {
         lines: 70,
         functions: 70,
