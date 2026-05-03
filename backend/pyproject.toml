@@ -12,7 +12,7 @@ dependencies = [
     "passlib[argon2]>=1.7",
     "argon2-cffi>=23.1",
     "pyotp>=2.9",
-    "sqlalchemy>=2.0",
+    "sqlalchemy[asyncio]>=2.0",
     "aiosqlite>=0.20",
     "alembic>=1.13",
     "structlog>=24.0",
@@ -43,7 +43,7 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "W", "F", "I", "N", "UP", "S", "B", "A", "C4", "DTZ", "EM", "ISC", "G", "PIE", "PT", "SIM", "TID", "PGH", "PL", "TRY", "RUF"]
-ignore = ["TRY003", "S101"]
+ignore = ["TRY003", "S101", "B008"]
 
 [tool.mypy]
 python_version = "3.12"
