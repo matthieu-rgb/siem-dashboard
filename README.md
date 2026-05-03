@@ -17,27 +17,105 @@ Lightweight Wazuh interface inspired by Linear.app. Replaces OpenSearch Dashboar
 - Optional TOTP MFA
 - Invite-based user onboarding (no SMTP required)
 
-## Quick start
+## Local development
 
-**Prerequisites:** Docker and Docker Compose v2.
+### Prerequisites
+
+- Docker Desktop 4.x or Docker Engine 25+
+- Docker Compose v2 (included in Docker Desktop)
+
+### Step-by-step startup
 
 ```
 git clone https://github.com/matthieu-rgb/siem-dashboard
 cd siem-dashboard
 cp .env.example .env
-# Edit .env: set WAZUH_HOST, WAZUH_USER, WAZUH_PASS
-docker compose up --build
 ```
 
-Open http://localhost:8080. The bootstrap admin credentials are printed in the backend container logs on first start.
+Edit `.env` and set at minimum:
 
-## Development
+```
+SECRET_KEY=<random 64-char hex>    # python3 -c "import secrets; print(secrets.token_hex(32))"
+WAZUH_HOST=https://your-wazuh:55000
+WAZUH_USER=wazuh
+WAZUH_PASS=your-password
+```
+
+Then start the stack using the helper script (recommended):
+
+```
+bash scripts/check_health.sh
+```
+
+This script:
+1. Tears down any existing stack (`docker compose down -v`)
+2. Builds and starts all services
+3. Polls until all services are healthy (up to 120 seconds)
+4. Extracts and saves the admin password to `.admin-password`
+5. Prints the URL and credentials
+
+Or start manually:
+
+```
+docker compose up --build -d
+docker compose logs backend   # look for the "Initial pwd" block
+```
+
+Open http://localhost:8080 and log in with `admin@local` + the printed password.
+
+### Admin credentials on first start
+
+The backend prints a bootstrap block to its logs on the very first startup (when the database is empty):
+
+```
+==========================================================
+  SIEM Dashboard - Bootstrap
+  Admin email   : admin@local
+  Initial pwd   : <random-password>   (change immediately)
+==========================================================
+```
+
+This password is only shown once. The `check_health.sh` script saves it to `.admin-password` automatically. After the first login, change the password in the Settings page.
+
+### Troubleshooting
+
+**1. Services stuck in "Created" state after `docker compose up -d`**
+
+This usually means Docker Desktop is in a bad state. Fix:
+
+```
+docker compose down -v
+docker system prune -f
+docker compose up --build -d
+```
+
+If it persists, restart Docker Desktop.
+
+**2. Backend exits immediately / "Table 'users' does not exist"**
+
+The database schema is managed by Alembic. The `entrypoint.sh` runs `alembic upgrade head` before starting uvicorn. If you see this error:
+
+- Make sure the `backend-data` volume is writable: `docker volume inspect siem-backend-data`
+- Do a clean restart: `docker compose down -v && docker compose up --build -d`
+
+**3. SECRET_KEY validation error at startup**
+
+The `SECRET_KEY` must be at least 32 characters and must not be the literal string `change-me-in-production`. Generate a valid key:
+
+```
+python3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Paste the output into `.env` as `SECRET_KEY=<value>`.
+
+## Development (without Docker)
 
 ### Backend (FastAPI, Python 3.12)
 
 ```
 cd backend
 pip install -e ".[dev]"
+alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
@@ -86,7 +164,7 @@ FastAPI -> Wazuh Manager API  (https://<host>:55000)
 ## Roadmap
 
 - [x] Phase 1 - Scaffolding
-- [ ] Phase 2 - Auth (JWT, bootstrap admin, RBAC)
+- [x] Phase 2 - Auth (JWT, bootstrap admin, RBAC)
 - [ ] Phase 3 - Agents view
 - [ ] Phase 4 - Alerts + WebSocket stream
 - [ ] Phase 5 - Multi-user + invites
