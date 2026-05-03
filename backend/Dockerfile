@@ -20,11 +20,16 @@ RUN addgroup --system --gid 1001 app && \
 
 COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
 COPY --from=builder /usr/local/bin/uvicorn /usr/local/bin/uvicorn
+COPY --from=builder /usr/local/bin/alembic /usr/local/bin/alembic
 
 COPY --chown=app:app app/ app/
+COPY --chown=app:app alembic/ alembic/
+COPY --chown=app:app alembic.ini alembic.ini
+COPY --chown=app:app entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
 
 USER app
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["./entrypoint.sh"]

@@ -7,15 +7,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
 from app.api.health import router as health_router
 from app.core.config import settings
-from app.db.models import Base
 from app.db.session import async_session_maker, engine
 from app.services.bootstrap import bootstrap_admin
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Schema is managed by alembic (entrypoint.sh runs `alembic upgrade head`
+    # before uvicorn starts). Only bootstrap the admin account here.
     async with async_session_maker() as session:
         await bootstrap_admin(session)
     yield
