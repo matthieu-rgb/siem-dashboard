@@ -39,9 +39,6 @@ Thumbs.db
 # Docker
 .docker/
 
-# Audit reports
-audits/
-
 # Secrets (extra safety net)
 *.pem
 *.key
